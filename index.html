@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f1e9">
+  <title>拖延症與時間管理｜教學簡報</title>
+  <style>
+    :root {
+      --paper: #f4f1e9;
+      --surface: #fffdf8;
+      --ink: #172b3a;
+      --muted: #61717c;
+      --line: #d9ded8;
+      --teal: #176b68;
+      --teal-soft: #dcece6;
+      --orange: #e87945;
+      --orange-soft: #f8e4d7;
+      --blue-soft: #e5ebf2;
+      --yellow: #f3c65e;
+      --shadow: 0 18px 60px rgba(23, 43, 58, .09);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      letter-spacing: .01em;
+    }
+    button { font: inherit; }
+    .app { min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto; }
+    .topbar, .bottombar { width: min(1440px, 100%); margin: auto; padding: 18px clamp(18px, 4vw, 58px); display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .topbar { color: var(--muted); font-size: 13px; }
+    .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 750; letter-spacing: .03em; }
+    .brand-mark { width: 28px; height: 28px; border-radius: 9px 9px 9px 3px; background: var(--teal); display: inline-grid; place-items: center; color: white; font-size: 13px; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .source-toggle, .nav-btn { border: 1px solid var(--line); background: rgba(255,253,248,.72); color: var(--ink); border-radius: 999px; padding: 10px 15px; cursor: pointer; transition: .2s ease; }
+    .source-toggle:hover, .nav-btn:hover:not(:disabled) { border-color: var(--teal); transform: translateY(-1px); }
+    .source-toggle[aria-expanded="true"] { background: var(--teal); border-color: var(--teal); color: white; }
+    .stage { display: grid; place-items: center; padding: 4px clamp(14px, 4vw, 58px) 22px; }
+    .slide {
+      display: none;
+      position: relative;
+      width: min(1324px, 100%);
+      min-height: min(690px, calc(100vh - 150px));
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid rgba(23,43,58,.08);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      padding: clamp(26px, 5vw, 68px);
+      animation: enter .36s ease both;
+    }
+    .slide.active { display: flex; flex-direction: column; }
+    @keyframes enter { from { opacity: .35; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    .slide::after { content: ""; position: absolute; width: 300px; height: 300px; right: -190px; top: -205px; border-radius: 50%; background: var(--teal-soft); opacity: .6; pointer-events: none; }
+    .eyebrow { color: var(--teal); text-transform: uppercase; font-size: 12px; font-weight: 800; letter-spacing: .16em; margin: 0 0 15px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(40px, 6.5vw, 82px); line-height: 1.06; letter-spacing: -.045em; margin-bottom: 20px; max-width: 900px; }
+    h2 { font-size: clamp(30px, 4.1vw, 52px); line-height: 1.12; letter-spacing: -.035em; margin-bottom: 18px; max-width: 1040px; }
+    h3 { font-size: clamp(18px, 2vw, 23px); margin-bottom: 9px; }
+    .lead { font-size: clamp(19px, 2.4vw, 27px); line-height: 1.48; max-width: 900px; color: #344b5a; }
+    .body-copy { font-size: clamp(16px, 1.6vw, 20px); line-height: 1.6; color: #435765; }
+    .small { color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .spacer { flex: 1; min-height: 12px; }
+    .tag { display: inline-flex; align-items: center; border-radius: 999px; padding: 7px 12px; background: var(--teal-soft); color: var(--teal); font-size: 13px; font-weight: 750; }
+    .tag.orange { background: var(--orange-soft); color: #9d4d29; }
+    .tag.blue { background: var(--blue-soft); color: #405a73; }
+    .tagline { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .cover { justify-content: center; }
+    .cover .kicker { color: var(--orange); font-size: 15px; font-weight: 800; letter-spacing: .13em; margin-bottom: 18px; }
+    .cover h1 { max-width: 780px; }
+    .cover .subtitle { color: var(--teal); font-weight: 650; font-size: clamp(20px, 2.8vw, 32px); margin: 0 0 22px; }
+    .cover .opening { padding-left: 18px; border-left: 3px solid var(--orange); color: var(--muted); font-size: 17px; }
+    .cover-art { position: absolute; right: clamp(30px, 8vw, 120px); bottom: 90px; width: min(31vw, 360px); height: 270px; }
+    .orbit { position:absolute; inset: 20px 25px; border: 1px dashed #b9c9c2; border-radius: 50%; transform: rotate(-18deg); }
+    .orbit::after { content:""; position:absolute; width:100%; height:100%; border:1px solid #e1c5ad; border-radius:50%; transform:rotate(48deg) scale(.76); }
+    .orb { position:absolute; display:grid; place-items:center; text-align:center; border-radius:50%; font-weight:800; box-shadow:0 12px 26px rgba(23,43,58,.10); }
+    .orb.task { width:128px; height:128px; left:0; top:30px; background:var(--teal); color:white; font-size:17px; }
+    .orb.now { width:110px; height:110px; right:0; bottom:20px; background:var(--orange-soft); color:#8f482b; font-size:15px; }
+    .spark { position:absolute; left:51%; top:20px; color:var(--yellow); font-size:48px; }
+    .learning-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; margin-top:18px; }
+    .learn-item { background:#f2f5f1; border-radius:17px; padding:18px 19px; display:flex; gap:14px; align-items:flex-start; line-height:1.45; font-size:17px; }
+    .learn-num { flex:0 0 30px; width:30px; height:30px; display:grid; place-items:center; border-radius:10px; color:white; background:var(--teal); font-size:14px; font-weight:800; }
+    .flow { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:11px; margin:24px 0 18px; align-items:stretch; }
+    .flow-step { position:relative; min-height:150px; padding:18px 16px; background:#f2f5f1; border-radius:17px; display:flex; flex-direction:column; justify-content:space-between; }
+    .flow-step:not(:last-child)::after { content:"→"; position:absolute; z-index:2; right:-16px; top:46%; width:22px; text-align:center; color:var(--orange); font-weight:900; font-size:20px; }
+    .flow-step .num { font-size:12px; letter-spacing:.1em; color:var(--teal); font-weight:850; }
+    .flow-step strong { font-size:17px; line-height:1.35; }
+    .flow-step.warn { background:var(--orange-soft); }
+    .callout { margin-top:12px; background:var(--blue-soft); border-radius:15px; padding:16px 20px; color:#31485d; line-height:1.5; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px; }
+    .panel { border-radius:20px; padding:22px; background:#f1f4f1; min-height:170px; }
+    .panel.orange { background:var(--orange-soft); }
+    .panel.teal { background:var(--teal-soft); }
+    .panel.blue { background:var(--blue-soft); }
+    .panel p:last-child { margin-bottom:0; }
+    .question { border:1px solid var(--line); background:#fff; border-radius:16px; padding:15px 18px; margin-top:16px; font-size:18px; }
+    .characters { display:grid; grid-template-columns:1fr auto 1fr; gap:15px; align-items:center; margin:20px 0; }
+    .character { min-height:190px; padding:23px; border-radius:22px; display:flex; flex-direction:column; justify-content:center; text-align:center; }
+    .character.rational { background:var(--teal-soft); }
+    .character.monkey { background:var(--orange-soft); }
+    .character .emoji { font-size:42px; margin-bottom:8px; }
+    .versus { color:var(--muted); font-weight:800; }
+    .deadline-track { position:relative; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin:28px 4px 17px; }
+    .deadline-track::before { content:""; position:absolute; left:5%; right:5%; top:19px; height:3px; background:var(--line); }
+    .time-node { position:relative; padding-top:45px; }
+    .time-node::before { content:""; position:absolute; width:16px; height:16px; border:5px solid var(--surface); outline:2px solid var(--teal); border-radius:50%; background:var(--teal); left:8px; top:11px; z-index:1; }
+    .time-node:last-child::before { outline-color:var(--orange); background:var(--orange); }
+    .time-node strong { display:block; margin-bottom:6px; }
+    .equation { margin:22px 0; padding:22px 24px; border-radius:19px; background:var(--ink); color:white; font-size:clamp(21px,3.1vw,34px); font-weight:800; text-align:center; letter-spacing:.01em; }
+    .factor-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .factor { padding:17px 16px; border-radius:16px; background:#f1f4f1; min-height:125px; }
+    .factor b { display:block; color:var(--teal); margin-bottom:7px; font-size:18px; }
+    .factor:nth-child(3), .factor:nth-child(4) { background:var(--orange-soft); }
+    .factor:nth-child(3) b, .factor:nth-child(4) b { color:#9d4d29; }
+    .task-card { margin-top:14px; padding:15px 19px; border:1px dashed #b8c6bf; border-radius:15px; color:var(--muted); }
+    .three-methods { display:grid; grid-template-columns:repeat(3,1fr); gap:13px; margin:20px 0 15px; }
+    .method { border-radius:18px; padding:20px; background:#f1f4f1; }
+    .method:nth-child(2) { background:var(--orange-soft); }
+    .method:nth-child(3) { background:var(--blue-soft); }
+    .method .big { font-size:30px; font-weight:900; color:var(--teal); display:block; margin-bottom:11px; }
+    .method:nth-child(2) .big { color:#a2502a; }
+    .quote { border-left:3px solid var(--orange); padding:12px 18px; color:#53636d; font-size:18px; margin-top:8px; }
+    .schedule { margin-top:19px; border:1px solid var(--line); border-radius:19px; overflow:hidden; background:#fff; }
+    .schedule-row { display:grid; grid-template-columns:92px 1fr; min-height:52px; border-bottom:1px solid #edf0eb; }
+    .schedule-row:last-child { border-bottom:0; }
+    .schedule-time { padding:14px 12px; background:#f5f6f2; color:var(--muted); font-size:14px; font-weight:750; }
+    .schedule-block { margin:7px; border-radius:10px; padding:9px 13px; background:var(--teal-soft); display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:15px; }
+    .schedule-block.orange { background:var(--orange-soft); }
+    .schedule-block.light { background:var(--blue-soft); }
+    .schedule-block small { color:var(--muted); white-space:nowrap; }
+    .pomodoro-cycle { display:flex; align-items:stretch; gap:8px; margin:24px 0 18px; }
+    .cycle-work, .cycle-break, .cycle-long { min-height:90px; border-radius:17px; display:flex; flex-direction:column; justify-content:center; padding:16px; text-align:center; }
+    .cycle-work { flex:4; background:var(--teal); color:white; }
+    .cycle-break { flex:1; min-width:90px; background:var(--orange-soft); color:#884328; }
+    .cycle-long { flex:1.5; min-width:130px; background:var(--blue-soft); color:#40566a; }
+    .cycle-work strong, .cycle-break strong, .cycle-long strong { font-size:20px; }
+    .rules { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .rule { padding:16px; border-radius:16px; background:#f1f4f1; line-height:1.45; }
+    .rule b { color:var(--teal); display:block; margin-bottom:6px; }
+    .integration { display:grid; grid-template-columns:repeat(5,1fr); gap:9px; margin:20px 0; }
+    .integrate-step { position:relative; padding:17px 14px; border-radius:16px; background:#f1f4f1; min-height:154px; }
+    .integrate-step:nth-child(2), .integrate-step:nth-child(4) { background:var(--teal-soft); }
+    .integrate-step:nth-child(3), .integrate-step:nth-child(5) { background:var(--orange-soft); }
+    .integrate-step span { display:block; font-size:12px; font-weight:850; color:var(--teal); letter-spacing:.08em; margin-bottom:9px; }
+    .integrate-step strong { display:block; margin-bottom:8px; font-size:17px; }
+    .today-steps { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:25px 0 17px; }
+    .today { border-radius:20px; padding:23px; background:var(--teal); color:white; min-height:175px; }
+    .today:nth-child(2) { background:#b85e36; }
+    .today:nth-child(3) { background:#344e66; }
+    .today .number { font-size:13px; opacity:.75; letter-spacing:.12em; font-weight:800; }
+    .today h3 { margin:12px 0 8px; font-size:23px; }
+    .today p { margin:0; line-height:1.5; color:rgba(255,255,255,.88); }
+    .final-line { text-align:center; font-size:clamp(18px,2.4vw,25px); font-weight:750; max-width:950px; margin:14px auto 0; }
+    .notes-panel { display:none; position:fixed; z-index:20; left:50%; bottom:90px; transform:translateX(-50%); width:min(960px,calc(100% - 28px)); max-height:45vh; overflow:auto; padding:22px 25px; border:1px solid var(--line); border-radius:20px; background:#fffdf8; box-shadow:0 18px 70px rgba(23,43,58,.2); }
+    .notes-panel.open { display:block; animation:enter .2s ease both; }
+    .notes-panel h2 { font-size:20px; margin:0 0 8px; }
+    .notes-content { color:#495d69; font-size:15px; line-height:1.6; }
+    .notes-content p { margin:0 0 10px; }
+    .notes-content ul { margin:8px 0 0; padding-left:21px; }
+    .notes-content li { margin:4px 0; }
+    .notes-content code { font-family:ui-monospace, Consolas, monospace; color:#315b59; font-size:.92em; }
+    .bottombar { padding-top:9px; padding-bottom:20px; }
+    .nav-group { display:flex; align-items:center; gap:10px; }
+    .nav-btn { width:46px; height:42px; padding:0; font-size:20px; display:grid; place-items:center; }
+    .nav-btn:disabled { opacity:.4; cursor:not-allowed; }
+    .progress-area { display:flex; align-items:center; gap:12px; width:min(550px,55vw); }
+    .progress-track { flex:1; height:5px; background:#dce1db; border-radius:99px; overflow:hidden; }
+    .progress-fill { height:100%; width:8.333%; background:var(--teal); border-radius:99px; transition:width .3s ease; }
+    .page-count { min-width:52px; text-align:right; color:var(--muted); font-size:13px; font-weight:750; font-variant-numeric:tabular-nums; }
+    .key-hint { color:var(--muted); font-size:12px; }
+    @media (max-width: 860px) {
+      .slide { min-height:calc(100vh - 142px); padding:28px; border-radius:23px; }
+      .cover-art { opacity:.26; right:20px; bottom:30px; transform:scale(.85); transform-origin:bottom right; }
+      .flow { grid-template-columns:1fr; gap:8px; }
+      .flow-step { min-height:unset; display:grid; grid-template-columns:50px 1fr; gap:8px; align-items:center; padding:13px 15px; }
+      .flow-step:not(:last-child)::after { content:"↓"; right:15px; top:auto; bottom:-16px; }
+      .factor-grid { grid-template-columns:repeat(2,1fr); }
+      .integration { grid-template-columns:repeat(2,1fr); }
+      .integrate-step { min-height:125px; }
+      .integrate-step:last-child { grid-column:span 2; }
+      .key-hint { display:none; }
+    }
+    @media (max-width: 600px) {
+      .topbar, .bottombar { padding-left:14px; padding-right:14px; }
+      .topbar { font-size:11px; }
+      .source-toggle { padding:9px 11px; font-size:12px; }
+      .stage { padding:0 10px 12px; align-items:stretch; }
+      .slide { min-height:calc(100dvh - 135px); padding:25px 21px; border-radius:19px; }
+      .learning-grid, .two-col, .three-methods, .today-steps, .rules { grid-template-columns:1fr; }
+      .learn-item { font-size:15px; padding:14px; }
+      .characters { grid-template-columns:1fr; }
+      .versus { text-align:center; }
+      .character { min-height:135px; }
+      .deadline-track { grid-template-columns:1fr; gap:2px; margin-left:14px; }
+      .deadline-track::before { left:8px; top:5%; bottom:5%; width:3px; height:auto; right:auto; }
+      .time-node { padding:4px 0 14px 37px; }
+      .time-node::before { top:6px; left:0; }
+      .equation { font-size:20px; padding:18px 12px; }
+      .schedule-row { grid-template-columns:64px 1fr; }
+      .schedule-time { padding:12px 7px; font-size:12px; }
+      .schedule-block { font-size:13px; padding:8px; }
+      .pomodoro-cycle { flex-wrap:wrap; }
+      .cycle-work { flex-basis:100%; min-height:70px; }
+      .cycle-break, .cycle-long { flex:1; min-height:70px; }
+      .progress-area { width:auto; flex:1; }
+      .nav-group { gap:6px; }
+      .nav-btn { width:40px; height:39px; }
+      .notes-panel { bottom:75px; max-height:52vh; padding:18px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">P</span><span>學習簡報</span></div>
+      <div class="top-actions">
+        <span>拖延症與時間管理</span>
+        <button class="source-toggle" id="notesToggle" type="button" aria-expanded="false" aria-controls="notesPanel">教學補充／Wiki 出處</button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage" aria-live="polite">
+      <section class="slide cover active" data-title="重新理解拖延" data-notes="先邀請聽眾想一件自己近期延後的事。本簡報依 Wiki 整理，從理解拖延循環到安排可開始的小步驟。來源：wiki/sources/FastCompany_拖延是情緒問題.md、wiki/sources/Mira_拖延者心智模型.md。概念：[[情緒調節與拖延]]、[[即時滿足與期限效應]]。">
+        <div class="kicker">PROCRASTINATION &amp; TIME MANAGEMENT</div>
+        <h1>拖延症與<br>時間管理</h1>
+        <p class="subtitle">從 Emotional Regulation 到可執行的日常節奏</p>
+        <p class="opening">明明知道有事要做，為什麼手卻先伸向比較輕鬆的事？</p>
+        <div class="tagline"><span class="tag">理解拖延</span><span class="tag orange">找到下一步</span><span class="tag blue">安排可持續節奏</span></div>
+        <div class="cover-art" aria-hidden="true"><div class="orbit"></div><div class="orb task">重要<br>任務</div><div class="orb now">眼前<br>容易做的事</div><div class="spark">✳</div></div>
+        <div class="spacer"></div><p class="small">初學者教學簡報</p>
+      </section>
+
+      <section class="slide" data-title="學習目標" data-notes="學習目標依 outline.md 設計：理解拖延與負面情緒及自我調節的關係；區分 Tim Urban 演講比喻和理論摘要；用 TMT 四個因素檢視任務；嘗試 Time Blocking 與 Pomodoro Technique。來源：wiki/sources/FastCompany_拖延是情緒問題.md、wiki/sources/海苔熊_讓拖延成為覺醒.md。概念：[[情緒調節與拖延]]、[[時間動機理論]]。">
+        <p class="eyebrow">01 / 先建立理解</p><h2>為什麼要重新理解 Procrastination？</h2>
+        <p class="lead">先別急著替自己貼上「懶惰」標籤。試著看清任務、感受與眼前誘惑如何一起影響行動。</p>
+        <div class="learning-grid">
+          <div class="learn-item"><span class="learn-num">1</span><span>說明拖延如何與逃避預期的負面感受及自我調節相關</span></div>
+          <div class="learn-item"><span class="learn-num">2</span><span>分辨演講比喻與心理學理論解釋</span></div>
+          <div class="learn-item"><span class="learn-num">3</span><span>用 Temporal Motivation Theory 的四個因素檢視一項任務</span></div>
+          <div class="learn-item"><span class="learn-num">4</span><span>把 Time Blocking 與 Pomodoro Technique 用在近期任務上</span></div>
+        </div>
+        <div class="spacer"></div><span class="tag">目標：從自責轉向觀察與行動</span>
+      </section>
+
+      <section class="slide" data-title="拖延與情緒調節" data-notes="Fast Company 的文章引用 Tim Pychyl，將拖延描述為逃避預期負面感受的情緒因應方式。流程是對任務感到不適、轉向短期能改善心情的事，短期舒緩但任務仍延後。不是所有拖延都能由單一原因解釋。來源：wiki/sources/FastCompany_拖延是情緒問題.md、wiki/sources/海苔熊_讓拖延成為覺醒.md。概念：[[情緒調節與拖延]]、[[自我慈悲與反芻思考]]。">
+        <p class="eyebrow">02 / 心理學成因</p><h2>Emotional Regulation：拖延如何暫時減輕不舒服</h2>
+        <p class="body-copy">有時，我們避開的不是工作本身，而是預想中會出現的壓力、挫折或不愉快。</p>
+        <div class="flow">
+          <div class="flow-step"><span class="num">01</span><strong>面對一項任務</strong></div>
+          <div class="flow-step"><span class="num">02</span><strong>預想不舒服的感受</strong></div>
+          <div class="flow-step warn"><span class="num">03</span><strong>轉向眼前較輕鬆的事</strong></div>
+          <div class="flow-step"><span class="num">04</span><strong>短期感到舒緩</strong></div>
+          <div class="flow-step warn"><span class="num">05</span><strong>任務延後，長期目標受影響</strong></div>
+        </div>
+        <div class="callout"><strong>自我觀察：</strong>「我正在躲開什麼感覺？」</div>
+      </section>
+
+      <section class="slide" data-title="不只是懶惰或時間不足" data-notes="Fast Company 強調拖延不只是時間管理或意志力問題；海苔熊文章定義拖延為自我調節失敗，並與策略性延遲區分。文章也提到過度負荷或對任務意願不足時，值得重新檢視需求；若拖延時仍焦慮，不代表真正休息。來源：wiki/sources/FastCompany_拖延是情緒問題.md、wiki/sources/海苔熊_讓拖延成為覺醒.md。概念：[[情緒調節與拖延]]、[[休息與恢復]]。">
+        <p class="eyebrow">02 / 心理學成因</p><h2>拖延不是單一問題的名稱</h2>
+        <p class="lead">不只問「我怎麼這麼懶？」也可以問：目前是哪一種阻力在發生？</p>
+        <div class="two-col">
+          <div class="panel teal"><span class="tag">可能是情緒逃避</span><h3 style="margin-top:14px">任務讓我預期會不舒服</h3><p class="body-copy">例如壓力、挫折或無聊。避開任務可能短暫讓心情好一些。</p></div>
+          <div class="panel orange"><span class="tag orange">也可能要檢視負荷與意願</span><h3 style="margin-top:14px">我是否太累，或不想做這件事？</h3><p class="body-copy">海苔熊提醒，拖延有時是重新檢視需求的訊號；拖延時仍焦慮，不等於已得到休息。</p></div>
+        </div>
+        <div class="question">先辨認阻力，再選方法；別急著把每一次延遲都歸為懶惰。</div>
+      </section>
+
+      <section class="slide" data-title="Instant Gratification Monkey" data-notes="這組角色出自 Tim Urban TED 演講，透過 Mira 在 Medium 的二手摘要收錄。理性決策者和 Instant Gratification Monkey、Panic Monster 都是幽默比喻，不是大腦真實角色或神經科學模型。來源：wiki/sources/Mira_拖延者心智模型.md。概念：[[即時滿足與期限效應]]。">
+        <p class="eyebrow">03 / 大腦運作模型</p><h2>理性計畫與眼前誘惑的拉扯</h2>
+        <div class="characters">
+          <div class="character rational"><div class="emoji">🧭</div><h3>理性決策者</h3><p class="small">想做符合計畫、對長期目標有利的選擇</p></div>
+          <div class="versus">拉扯</div>
+          <div class="character monkey"><div class="emoji">🐒</div><h3>Instant Gratification Monkey</h3><p class="small">把注意力拉向當下有趣或舒服的活動</p></div>
+        </div>
+        <div class="callout"><strong>Panic Monster｜恐慌怪獸：</strong>演講比喻中，死線迫近時出現的急迫感可能促使人開始趕工。</div>
+        <p class="small" style="margin-top:12px">這是 Tim Urban 演講中的幽默比喻，不是實際腦部構造。</p>
+      </section>
+
+      <section class="slide" data-title="死線與長期拖延" data-notes="Mira 的 Medium 文是 Tim Urban TED Talk 的短篇二手摘要。它區分有期限的短期任務與缺少迫近期限的長期目標；職涯、人際關係、健康等例子來自該摘要。下一頁的 TMT 是海苔熊文章所述的另一個框架，兩者不可混為一談。來源：wiki/sources/Mira_拖延者心智模型.md、wiki/sources/海苔熊_讓拖延成為覺醒.md。概念：[[即時滿足與期限效應]]、[[時間動機理論]]。">
+        <p class="eyebrow">03 / 大腦運作模型</p><h2>死線與長期拖延：急迫感何時出現？</h2>
+        <div class="deadline-track">
+          <div class="time-node"><strong>期限還遠</strong><p class="small">長期目標的結果較抽象，眼前急迫感較弱</p></div>
+          <div class="time-node"><strong>持續延後</strong><p class="small">即時舒服的選擇容易搶走注意力</p></div>
+          <div class="time-node"><strong>死線迫近</strong><p class="small">「恐慌怪獸」比喻急迫感推動開始</p></div>
+        </div>
+        <div class="two-col">
+          <div class="panel"><h3>有近期死線</h3><p class="body-copy">通常有較直接、較清楚的後果。</p></div>
+          <div class="panel orange"><h3>缺少迫近死線</h3><p class="body-copy">職涯、關係、健康等目標較抽象，可能一直被推遲。</p></div>
+        </div>
+        <p class="small" style="margin-top:14px">下一個視角：Temporal Motivation Theory 會把「回報還要等多久」列為動機因素。</p>
+      </section>
+
+      <section class="slide" data-title="Temporal Motivation Theory" data-notes="公式與四因素依 wiki/concepts/時間動機理論.md、wiki/sources/海苔熊_讓拖延成為覺醒.md。此頁以問題幫助觀察，不把公式當精確預測個人拖延程度的計算器。Mira 摘要只談期限與長期目標的比喻，並未提出 TMT。">
+        <p class="eyebrow">04 / 動機與自我調節</p><h2>Temporal Motivation Theory：動機的四個因素</h2>
+        <div class="equation">動機＝（期望 × 價值）÷（衝動性 × 延遲）</div>
+        <div class="factor-grid">
+          <div class="factor"><b>期望</b>我相信自己能完成嗎？</div>
+          <div class="factor"><b>價值</b>這件事對我有多重要？</div>
+          <div class="factor"><b>衝動性</b>我多容易被其他事帶走？</div>
+          <div class="factor"><b>延遲</b>回報或結果還要等多久？</div>
+        </div>
+        <div class="task-card"><strong>想一件近期任務：</strong>哪個因素讓你更想做？哪個因素讓你更容易延後？不必計算數值。</div>
+        <p class="small" style="margin-top:12px">這是 Wiki 收錄的理論摘要，適合用來檢視任務，不是精確的個人拖延計算器。</p>
+      </section>
+
+      <section class="slide" data-title="小步行動打破逃避循環" data-notes="任務拆解、接納不適、執行意圖來自 wiki/sources/海苔熊_讓拖延成為覺醒.md；『下一個行動是什麼？』來自 Fast Company 摘要，參見 wiki/sources/FastCompany_拖延是情緒問題.md。Todoist 亦建議抗拒大時縮短到 15、10、5 分鐘。Gollwitzer 完成率 32%/71% 數字只見於海苔熊文章轉述且未在本 Wiki 獨立核驗，本簡報不把它當保證效果。概念：[[任務拆解]]、[[接納與承諾療法]]、[[執行意圖]]、[[下一步行動]]。">
+        <p class="eyebrow">04 / 動機與自我調節</p><h2>把「要完成」改成「先做一小步」</h2>
+        <div class="three-methods">
+          <div class="method"><span class="big">01</span><h3>縮小任務</h3><p class="small">「完成報告」→「打開文件，先寫標題」</p></div>
+          <div class="method"><span class="big">02</span><h3>帶著不舒服開始</h3><p class="small">辨認焦慮、煩躁或無聊；不必等感受消失才行動。</p></div>
+          <div class="method"><span class="big">03</span><h3>設定執行意圖</h3><p class="small">如果早上倒完咖啡，那麼坐下寫 15 分鐘報告。</p></div>
+        </div>
+        <div class="quote">「下一個行動是什麼？」</div>
+        <p class="small" style="margin-top:12px">大任務拆小、承認感受、指定起始情境，讓注意力回到當下可做的事。</p>
+      </section>
+
+      <section class="slide" data-title="Time Blocking" data-notes="做法來自 Cal Newport 文章摘要：前一晚花 10–20 分鐘參考清單、行事曆、週與季度規劃安排隔天，並留白以修訂；反應式工作也可安排開放區塊。40 小時/60 小時以上為作者估計，沒有比較研究細節，因此不在主畫面宣稱為普遍成效。Todoist 的緩衝番茄鐘建議也見 wiki/sources/Todoist_番茄鐘工作法.md。概念：[[時間區塊規劃]]、[[工作日規劃]]、[[時間估算與規劃謬誤]]。">
+        <p class="eyebrow">05 / 實戰工具一</p><h2>Time Blocking：先替重要工作留位置</h2>
+        <p class="body-copy">把工作安排進具體時段，也替突發事項和修訂留空間。</p>
+        <div class="schedule" aria-label="一天的時間區塊示意">
+          <div class="schedule-row"><div class="schedule-time">09:00</div><div class="schedule-block"><strong>重要工作區塊</strong><small>先保護需要專注的工作</small></div></div>
+          <div class="schedule-row"><div class="schedule-time">11:00</div><div class="schedule-block orange"><strong>開放／反應式工作</strong><small>處理臨時需求；有空檔再做次要任務</small></div></div>
+          <div class="schedule-row"><div class="schedule-time">13:00</div><div class="schedule-block light"><strong>下一段工作或調整</strong><small>依實際進度修訂計畫</small></div></div>
+        </div>
+        <div class="callout"><strong>規劃方式：</strong>前一晚花 10–20 分鐘安排隔天；旁邊留白，讓行程能因變化修訂。</div>
+        <p class="small" style="margin-top:10px">以上為方法示意，並非唯一正確排法。</p>
+      </section>
+
+      <section class="slide" data-title="Pomodoro Technique" data-notes="基本節奏及調整依 wiki/sources/Todoist_番茄鐘工作法.md、wiki/concepts/番茄鐘工作法.md。Todoist 常見版本為 25/5，四輪後長休息 15–30 分鐘；抗拒大可試 15、10 或 5 分鐘，創作可試長段。每天排程上限及緩衝是 Todoist 建議，不是通用標準。概念：[[任務拆解]]、[[專注與分心管理]]、[[休息與恢復]]。">
+        <p class="eyebrow">06 / 實戰工具二</p><h2>Pomodoro Technique：開始一輪，再專注一輪</h2>
+        <div class="pomodoro-cycle">
+          <div class="cycle-work"><strong>專注工作</strong><span>常見節奏 25 分鐘</span></div>
+          <div class="cycle-break"><strong>短休息</strong><span>5 分鐘</span></div>
+          <div class="cycle-long"><strong>四輪後</strong><span>休息 15–30 分鐘</span></div>
+        </div>
+        <div class="rules">
+          <div class="rule"><b>一輪只做一件事</b>臨時想到其他事，先記下來，稍後處理。</div>
+          <div class="rule"><b>大任務拆小</b>需要多輪的工作切成較小步驟；零碎短任務可合併。</div>
+          <div class="rule"><b>依阻力調整</b>25 分鐘太難開始，就試 15、10 或 5 分鐘。</div>
+        </div>
+        <div class="callout"><strong>休息提示：</strong>暫離螢幕、起身活動；每日排程留緩衝，不必塞滿。</div>
+      </section>
+
+      <section class="slide" data-title="整合練習" data-notes="此頁把不同 Wiki 來源的方法整合成學習練習，並非某一篇來源作者提出的統一流程。TMT：wiki/concepts/時間動機理論.md；任務拆解與執行意圖：wiki/sources/海苔熊_讓拖延成為覺醒.md；時間區塊：wiki/sources/CalNewport_每日時間區塊規劃.md；Pomodoro：wiki/sources/Todoist_番茄鐘工作法.md；情緒觀察：wiki/sources/FastCompany_拖延是情緒問題.md。">
+        <p class="eyebrow">07 / 整合行動</p><h2>把一項拖延任務變成明日計畫</h2>
+        <div class="integration">
+          <div class="integrate-step"><span>STEP 01</span><strong>辨認</strong><p class="small">我在逃避什麼感受？</p></div>
+          <div class="integrate-step"><span>STEP 02</span><strong>檢視動機</strong><p class="small">期望、價值、衝動性、延遲</p></div>
+          <div class="integrate-step"><span>STEP 03</span><strong>縮小下一步</strong><p class="small">寫出一個可開始的動作</p></div>
+          <div class="integrate-step"><span>STEP 04</span><strong>安排時間</strong><p class="small">放進 Time Blocking，保留彈性</p></div>
+          <div class="integrate-step"><span>STEP 05</span><strong>開始一輪</strong><p class="small">選一段適合自己的 Pomodoro</p></div>
+        </div>
+        <div class="callout"><strong>現在試寫：</strong>「如果＿＿＿＿，那麼我就先＿＿＿＿分鐘。」</div>
+        <p class="small" style="margin-top:11px">這是把多篇來源的方法整理成練習，不代表原作者共同提出此流程。</p>
+      </section>
+
+      <section class="slide" data-title="今天就能開始的三步驟" data-notes="三步驟整合自 Fast Company 的情緒觀察與下一步行動、海苔熊的任務拆解與執行意圖、Cal Newport 的時間區塊，以及 Todoist 的番茄鐘與休息。具體來源見相應 Wiki 摘要。概念：[[情緒調節與拖延]]、[[下一步行動]]、[[時間區塊規劃]]、[[番茄鐘工作法]]。">
+        <p class="eyebrow">07 / 總結</p><h2>今天就能開始的三步驟</h2>
+        <div class="today-steps">
+          <div class="today"><span class="number">01 / 先辨認</span><h3>看清阻力</h3><p>我正在逃避什麼感受？是否需要檢視負荷或意願？</p></div>
+          <div class="today"><span class="number">02 / 再縮小</span><h3>找一小步</h3><p>把任務改寫成一個能立即開始的行動。</p></div>
+          <div class="today"><span class="number">03 / 放進時間</span><h3>替它留位置</h3><p>安排一段可調整的時間；需要時用一輪番茄鐘開始。</p></div>
+        </div>
+        <p class="final-line">先看清阻力，選一小步，替它安排一段可開始的時間。</p>
+        <div class="spacer"></div><p class="small" style="text-align:center">謝謝聆聽</p>
+      </section>
+    </main>
+
+    <aside class="notes-panel" id="notesPanel" aria-label="教學補充與 Wiki 出處">
+      <h2 id="notesTitle">教學補充／Wiki 出處</h2>
+      <div class="notes-content" id="notesContent"></div>
+    </aside>
+
+    <footer class="bottombar">
+      <div class="nav-group">
+        <button class="nav-btn" id="prevBtn" type="button" aria-label="上一頁">←</button>
+        <button class="nav-btn" id="nextBtn" type="button" aria-label="下一頁">→</button>
+      </div>
+      <div class="progress-area" aria-label="投影片進度">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <span class="page-count" id="pageCount">01 / 12</span>
+      </div>
+      <div class="key-hint">使用 ← → 鍵切換</div>
+    </footer>
+  </div>
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const prev = document.getElementById('prevBtn');
+      const next = document.getElementById('nextBtn');
+      const fill = document.getElementById('progressFill');
+      const count = document.getElementById('pageCount');
+      const toggle = document.getElementById('notesToggle');
+      const panel = document.getElementById('notesPanel');
+      const notes = document.getElementById('notesContent');
+      const notesTitle = document.getElementById('notesTitle');
+      let current = 0;
+      let notesOpen = false;
+
+      function render() {
+        slides.forEach((slide, index) => {
+          slide.classList.toggle('active', index === current);
+          slide.setAttribute('aria-hidden', index === current ? 'false' : 'true');
+        });
+        prev.disabled = current === 0;
+        next.disabled = current === slides.length - 1;
+        count.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+        fill.style.width = `${((current + 1) / slides.length) * 100}%`;
+        notesTitle.textContent = `${slides[current].dataset.title}｜教學補充／Wiki 出處`;
+        notes.textContent = slides[current].dataset.notes;
+        document.title = `${slides[current].dataset.title}｜拖延症與時間管理`;
+      }
+      function goTo(index) {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+        render();
+      }
+      function setNotes(open) {
+        notesOpen = open;
+        panel.classList.toggle('open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+      }
+      prev.addEventListener('click', () => goTo(current - 1));
+      next.addEventListener('click', () => goTo(current + 1));
+      toggle.addEventListener('click', () => setNotes(!notesOpen));
+      document.addEventListener('keydown', event => {
+        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.key === 'ArrowLeft') { event.preventDefault(); goTo(current - 1); }
+        if (event.key === 'ArrowRight') { event.preventDefault(); goTo(current + 1); }
+        if (event.key === 'Escape' && notesOpen) setNotes(false);
+      });
+      document.addEventListener('click', event => {
+        if (notesOpen && !panel.contains(event.target) && event.target !== toggle) setNotes(false);
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>
